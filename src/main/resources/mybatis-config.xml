@@ -9,7 +9,7 @@
             <dataSource type="POOLED">
                 <!--                数据库连接信息-->
                 <property name="driver" value="org.sqlite.JDBC"/>
-                <property name="url" value="jdbc:sqlite:/Applications/zhengjianshibie.app/Contents/app/classes/rundata_mac.db"/>
+                <property name="url" value="jdbc:sqlite:/Users/java0904/rundata_mac.db"/>
                 <!--                <property name="url" value="jdbc:sqlite:C:/Program Files/zhengjianshibie/app/classes/rundata_win.db"/>-->
                 <property name="username" value=""/>
                 <property name="password" value=""/>

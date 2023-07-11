@@ -86,6 +86,7 @@ public class HelloController {
 
     @FXML
     private TableColumn<APIResult, String> minzu;
+    public static int offset;
 
 
     @FXML
@@ -111,10 +112,6 @@ public class HelloController {
             //无论用户点击了什么，都不往下执行，只有填写了appkey才能开始操作
             return;
         }
-        String path = chooseDir.getText();
-        File folder = new File(path); // 替换为你的文件夹路径
-        MyJob.fileQueue = listFiles(folder);
-        this.picCount = MyJob.fileQueue.size();
         TaskManger.startJobs();
         System.out.println("任务启动完成");
         playTimeline();
@@ -337,6 +334,14 @@ public class HelloController {
             // 在此处处理选择的文件夹
             System.out.println("选择的文件夹路径: " + selectedDirectory.getAbsolutePath());
             chooseDir.setText(selectedDirectory.getAbsolutePath());
+            String path = chooseDir.getText();
+            //此时要判断，fileQueue有没有被初始化过，如果为空，则加载，否则，不用再次加载
+            File folder = new File(path); // 替换为你的文件夹路径
+            MyJob.fileQueue.clear();//清空之前的
+            MyJob.fileQueue = listFiles(folder);
+            this.picCount = MyJob.fileQueue.size();
+            HelloController.finished=0;
+            HelloController.list.clear();
         }
     }
 
