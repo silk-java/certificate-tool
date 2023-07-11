@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <!--                数据库连接信息-->
+                <property name="driver" value="org.sqlite.JDBC"/>
+                <property name="url" value="jdbc:sqlite:/Applications/zhengjianshibie.app/Contents/app/classes/rundata_mac.db"/>
+                <!--                <property name="url" value="jdbc:sqlite:C:/Program Files/zhengjianshibie/app/classes/rundata_win.db"/>-->
+                <property name="username" value=""/>
+                <property name="password" value=""/>
+                <property name="poolMaximumActiveConnections" value="10"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <!--        加载sql映射文件-->
+        <mapper resource="ApikeyMapper.xml"/>
+    </mappers>
+</configuration>

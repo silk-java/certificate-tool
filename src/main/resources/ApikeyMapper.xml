@@ -1,0 +1,26 @@
+<!-- fMapper.xml -->
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="cn.juhe.zjsb.ApikeyMapper">
+
+
+    <!-- 查询所有用户 -->
+    <select id="select" resultType="java.lang.String">
+        SELECT appkey
+        FROM conf
+    </select>
+    <select id="selectRunmodel" resultType="java.lang.String">
+        select mo from runmodel limit 1;
+    </select>
+    <update id="updateApikey" parameterType="java.lang.String">
+        update conf set appkey=#{appkey}
+    </update>
+    <update id="updateRunModel" parameterType="java.lang.String">
+        update runmodel set mo=#{mo}
+    </update>
+
+
+</mapper>
