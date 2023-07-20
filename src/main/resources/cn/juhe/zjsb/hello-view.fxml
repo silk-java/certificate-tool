@@ -7,12 +7,14 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.Pagination?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -23,7 +25,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="726.0" prefWidth="601.0" stylesheets="@css/home.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.juhe.zjsb.HelloController">
     <children>
-      <HBox alignment="CENTER" layoutX="128.0" prefHeight="128.0" prefWidth="382.0" spacing="10.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="35.0">
+      <HBox alignment="CENTER" layoutX="128.0" spacing="10.0" AnchorPane.leftAnchor="120.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="35.0">
          <children>
             <VBox alignment="CENTER_RIGHT" spacing="5.0">
                <children>
@@ -40,7 +42,7 @@
                             <Button mnemonicParsing="false" onAction="#onPauseAction" prefHeight="42.0" prefWidth="115.0" text="暂停" />
                      </children>
                   </HBox>
-                  <Rectangle fx:id="rightr" arcHeight="5.0" arcWidth="5.0" fill="DODGERBLUE" height="20.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="21.0" />
+                  <Rectangle fx:id="rightr" arcHeight="5.0" arcWidth="5.0" fill="#0000ff" height="20.0" stroke="BLACK" strokeType="INSIDE" visible="false" width="21.0" />
                </children>
             </VBox>
          </children>
@@ -94,6 +96,23 @@
                   </ImageView>
                </graphic>
           </Menu>
+            <Menu mnemonicParsing="false" text="运行模式">
+               <graphic>
+                  <ImageView fitHeight="32.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@img/setting.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+               <items>
+                  <RadioMenuItem mnemonicParsing="false" text="测试模式">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="runModelGroup" />
+                     </toggleGroup>
+                  </RadioMenuItem>
+                  <RadioMenuItem mnemonicParsing="false" text="真实模式" toggleGroup="$runModelGroup" />
+               </items>
+            </Menu>
         </menus>
       </MenuBar>
       <VBox alignment="CENTER" layoutX="472.0" layoutY="49.0" maxHeight="100.0" maxWidth="100.0" minHeight="100.0" minWidth="100.0" prefHeight="100.0" prefWidth="100.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">

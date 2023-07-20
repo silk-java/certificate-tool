@@ -7,10 +7,7 @@ import cn.juhe.zjsb.task.TaskManger;
 import cn.juhe.zjsb.util.EventBusUtil;
 import cn.juhe.zjsb.util.MybatisUtil;
 import com.google.common.eventbus.Subscribe;
-import javafx.animation.AnimationTimer;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -88,6 +85,8 @@ public class HelloController {
     private TableColumn<APIResult, String> minzu;
     public static int offset;
 
+    FadeTransition ft = new FadeTransition();
+    FadeTransition ft1 = new FadeTransition();
 
     @FXML
     private ProgressBar progress;
@@ -124,18 +123,12 @@ public class HelloController {
      */
     private void playTimeline() {
         rightr.setVisible(true);
-        KeyValue kv1 = new KeyValue(rightr.translateXProperty(), 0);
-        KeyFrame kf1 = new KeyFrame(Duration.seconds(0), "kf1", kv1);
-        KeyValue kv2 = new KeyValue(rightr.translateXProperty(), -352);
-        KeyFrame kf2 = new KeyFrame(Duration.seconds(2), "kf2", kv2);
-        KeyValue kv3 = new KeyValue(rightr.rotateProperty(), 0);
-        KeyFrame kf3 = new KeyFrame(Duration.seconds(0), "kf3", kv3);
-        KeyValue kv4 = new KeyValue(rightr.rotateProperty(), 360*3);
-        KeyFrame kf4 = new KeyFrame(Duration.seconds(2), "kf4", kv4);
-        timeline.getKeyFrames().addAll(kf1, kf2, kf3, kf4);
-        timeline.setAutoReverse(true);
-        timeline.setCycleCount(Integer.MAX_VALUE);
+
         timeline.play();
+
+        ft.play();
+
+        ft1.play();
     }
 
     /**
@@ -157,11 +150,47 @@ public class HelloController {
 
     @FXML
     void initialize() {
+        initAnimation();
         loadDBConfig();
         initTableView();
         timer.start();
         EventBusUtil.getDefault().register(this);
         configOtherControl();
+    }
+
+    /**
+     * 初始化动画
+     */
+    private void initAnimation() {
+        //x轴初始位置
+        KeyValue kv1 = new KeyValue(rightr.translateXProperty(), 0);
+        KeyFrame kf1 = new KeyFrame(Duration.seconds(0), "kf1", kv1);
+        //2秒钟之后，移动结束位置
+        KeyValue kv2 = new KeyValue(rightr.translateXProperty(), -352);
+        KeyFrame kf2 = new KeyFrame(Duration.seconds(2), "kf2", kv2);
+        //初始角度
+        KeyValue kv3 = new KeyValue(rightr.rotateProperty(), 0);
+        KeyFrame kf3 = new KeyFrame(Duration.seconds(0), "kf3", kv3);
+        //2秒钟之后旋转结束角度
+        KeyValue kv4 = new KeyValue(rightr.rotateProperty(), 360*3);
+        KeyFrame kf4 = new KeyFrame(Duration.seconds(2), "kf4", kv4);
+        timeline.getKeyFrames().addAll(kf1, kf2, kf3, kf4);
+        timeline.setAutoReverse(true);
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        //设置进度条闪烁
+        ft.setNode(progress);
+        ft.setFromValue(1);
+        ft.setToValue(0.2);
+        ft.setDuration(Duration.seconds(1));
+        ft.setAutoReverse(true);
+        ft.setCycleCount(Animation.INDEFINITE);
+        //设置矩形闪烁
+        ft1.setNode(rightr);
+        ft1.setFromValue(1);
+        ft1.setToValue(0.5);
+        ft1.setDuration(Duration.seconds(0.5));
+        ft1.setAutoReverse(true);
+        ft1.setCycleCount(Animation.INDEFINITE);
     }
 
     /**
@@ -174,7 +203,10 @@ public class HelloController {
         pageBar.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> {
             int fromIndex = newValue.intValue() * ROWS_PER_PAGE;
             int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, list.size());
-            tableview.setItems(FXCollections.observableArrayList(list.subList(fromIndex, toIndex)));
+            //感觉这一步没有必要了，只要list变化就行了,不用再设置
+//            tableview.setItems(FXCollections.observableArrayList(list.subList(fromIndex, toIndex)));
+            list.clear();
+            list.addAll(FXCollections.observableArrayList(list.subList(fromIndex, toIndex)));
         });
     }
 
@@ -256,7 +288,7 @@ public class HelloController {
         newImg.setImage(tmo);
         System.out.println("收到消息：" + data);
         simulateLogOutput(data.toString());
-        list.add(data);
+        list.add(0,data);
         finished++;
         //此处更新进度条
         System.out.println("更新进度条" + (finished / (double) picCount));
@@ -408,7 +440,9 @@ public class HelloController {
     void onPauseAction(ActionEvent ignoredEvent) throws SchedulerException {
         TaskManger.shutdown();
         System.out.println("任务关闭");
-        rightr.setVisible(false);
+        timeline.pause();
+//        ft.pause();
+//        rightr.setVisible(false);
     }
 
     AnimationTimer timer = new AnimationTimer() {
