@@ -21,6 +21,7 @@ import javafx.scene.control.*;
 
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.*;
 import javafx.util.Callback;
@@ -69,6 +70,7 @@ public class HelloController {
     private TableColumn<APIResult, String> birthday;
     public int picCount;
     public static int finished;
+    FillTransition ft2 = new FillTransition();
 
     @FXML
     private TextField chooseDir;
@@ -129,6 +131,7 @@ public class HelloController {
         ft.play();
 
         ft1.play();
+        ft2.play();
     }
 
     /**
@@ -191,6 +194,13 @@ public class HelloController {
         ft1.setDuration(Duration.seconds(0.5));
         ft1.setAutoReverse(true);
         ft1.setCycleCount(Animation.INDEFINITE);
+        //设置颜色动画
+        ft2.setDuration(Duration.seconds(1));
+        ft2.setShape(rightr);
+        ft2.setFromValue(Color.valueOf("#0000CD"));
+        ft2.setToValue(Color.valueOf("#EE1289"));
+        ft2.setAutoReverse(true);
+        ft2.setCycleCount(Animation.INDEFINITE);
     }
 
     /**
