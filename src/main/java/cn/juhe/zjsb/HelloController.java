@@ -175,7 +175,7 @@ public class HelloController {
         KeyValue kv3 = new KeyValue(rightr.rotateProperty(), 0);
         KeyFrame kf3 = new KeyFrame(Duration.seconds(0), "kf3", kv3);
         //2秒钟之后旋转结束角度
-        KeyValue kv4 = new KeyValue(rightr.rotateProperty(), 360*3);
+        KeyValue kv4 = new KeyValue(rightr.rotateProperty(), 360 * 3);
         KeyFrame kf4 = new KeyFrame(Duration.seconds(2), "kf4", kv4);
         timeline.getKeyFrames().addAll(kf1, kf2, kf3, kf4);
         timeline.setAutoReverse(true);
@@ -210,14 +210,19 @@ public class HelloController {
         // 绑定TextArea的宽度和高度到ScrollPane
         textareaLog.prefWidthProperty().bind(sc.widthProperty());
         textareaLog.prefHeightProperty().bind(sc.heightProperty());
-        pageBar.currentPageIndexProperty().addListener((observable, oldValue, newValue) -> {
-            int fromIndex = newValue.intValue() * ROWS_PER_PAGE;
-            int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, list.size());
-            //感觉这一步没有必要了，只要list变化就行了,不用再设置
-//            tableview.setItems(FXCollections.observableArrayList(list.subList(fromIndex, toIndex)));
-            list.clear();
-            list.addAll(FXCollections.observableArrayList(list.subList(fromIndex, toIndex)));
-        });
+        pageBar.setCurrentPageIndex(0);
+        pageBar.setPageFactory(this::createPage);
+    }
+
+    private static final int ITEMS_PER_PAGE = 10;
+
+    private TableView<APIResult> createPage(int pageIndex) {
+        int fromIndex = pageIndex * ITEMS_PER_PAGE;
+        int TOTAL_ITEMS = list.size();
+        int toIndex = Math.min(fromIndex + ITEMS_PER_PAGE, TOTAL_ITEMS);
+        List<APIResult> subList = list.subList(fromIndex, toIndex);
+        tableview.setItems(FXCollections.observableArrayList(subList));
+        return tableview;
     }
 
     /**
@@ -262,6 +267,7 @@ public class HelloController {
             }
         });
         tableview.setItems(list);
+
     }
 
     /**
@@ -298,26 +304,22 @@ public class HelloController {
         newImg.setImage(tmo);
         System.out.println("收到消息：" + data);
         simulateLogOutput(data.toString());
-        list.add(0,data);
+        list.add(0, data);
         finished++;
         //此处更新进度条
-        System.out.println("更新进度条" + (finished / (double) picCount));
         Platform.runLater(() -> {
             finishAndTotal.setText(finished + "/" + picCount);
             progress.setProgress((finished / (double) picCount));
-            //设置最大
+            //设置总页数
             int totalPage;
-            if (finished / ROWS_PER_PAGE == 0) {
-                totalPage = finished / ROWS_PER_PAGE;
+            if (finished % ITEMS_PER_PAGE == 0) {
+                totalPage = finished / ITEMS_PER_PAGE;
             } else {
-                totalPage = finished / ROWS_PER_PAGE + 1;
+                totalPage = finished / ITEMS_PER_PAGE + 1;
             }
             pageBar.setPageCount(totalPage);
             pageBar.setMaxPageIndicatorCount(totalPage);
-            int fromIndex = pageBar.getCurrentPageIndex() * ROWS_PER_PAGE;
-            int toIndex = Math.min(fromIndex + ROWS_PER_PAGE, list.size());
-            tableview.setItems(FXCollections.observableArrayList(list.subList(fromIndex, toIndex)));
-            pageBar.setCurrentPageIndex(pageBar.getCurrentPageIndex());
+            pageBar.setPageFactory(this::createPage);
 
         });
 
@@ -354,6 +356,8 @@ public class HelloController {
             alert.setTitle("确认选择");
             alert.setHeaderText("当前任务尚未完成，确认要重新选择文件吗？");
             alert.setContentText("点击确定重新选择。");
+            alert.initModality(Modality.APPLICATION_MODAL);
+            alert.initOwner(sc.getScene().getWindow());
             // 处理对话框按钮点击事件
             Optional<ButtonType> buttonType = alert.showAndWait();
             if (buttonType.isPresent() && buttonType.get().getButtonData().equals(ButtonBar.ButtonData.OK_DONE)) {
@@ -382,7 +386,7 @@ public class HelloController {
             MyJob.fileQueue.clear();//清空之前的
             MyJob.fileQueue = listFiles(folder);
             this.picCount = MyJob.fileQueue.size();
-            HelloController.finished=0;
+            HelloController.finished = 0;
             HelloController.list.clear();
         }
     }
@@ -396,7 +400,7 @@ public class HelloController {
             alert.setTitle("确认选择");
             alert.setHeaderText("当前任务尚未完成，确认要导出结果吗？");
             alert.setContentText("点击确定导出");
-            Stage stage = (Stage)pageBar.getScene().getWindow();
+            Stage stage = (Stage) pageBar.getScene().getWindow();
             alert.initOwner(stage);
             // 处理对话框按钮点击事件
             Optional<ButtonType> buttonType = alert.showAndWait();
@@ -414,7 +418,7 @@ public class HelloController {
         fileChooser.setTitle("保存文件");
         fileChooser.setInitialFileName(chooseDir.getText());
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("excel", "*.xlsx"),
+                new FileChooser.ExtensionFilter("excel", "*.xlsx", "xls"),
                 new FileChooser.ExtensionFilter("所有类型", "*.*")
         );
         //保存
@@ -478,7 +482,6 @@ public class HelloController {
 
     private void simulateLogOutput(String log) {
         boolean offer = logQueue.offer(log);
-        System.out.println("offer:" + offer + "====" + log);
     }
 
     private void updateTextArea() {
@@ -505,7 +508,7 @@ public class HelloController {
         dialog.setTitle("输入APPKEY");
         dialog.setHeaderText("请输入您在聚合数据申请的证件识别接口的appkey:");
         dialog.setContentText("key:");
-        Stage stage = (Stage)pageBar.getScene().getWindow();
+        Stage stage = (Stage) pageBar.getScene().getWindow();
         dialog.initOwner(stage);
         dialog.showAndWait().ifPresent(name -> {
             // 处理用户输入的结果
@@ -525,16 +528,14 @@ public class HelloController {
         choices.add(15);
         choices.add(20);
         choices.add(30);
-
         ChoiceDialog<Integer> dialog = new ChoiceDialog<>(15, choices);
-        dialog.setTitle("Choice Dialog");
-        dialog.setHeaderText("Choose an option:");
-        dialog.setContentText("Options:");
-        Stage stage = (Stage)pageBar.getScene().getWindow();
+        dialog.setTitle("每页数量");
+        dialog.setHeaderText("请选择:");
+        dialog.setContentText("数量:");
+        Stage stage = (Stage) pageBar.getScene().getWindow();
         dialog.initOwner(stage);
         Optional<Integer> result = dialog.showAndWait();
         result.ifPresent(selectedOption -> {
-            System.out.println("Selected option: " + selectedOption);
             HelloController.ROWS_PER_PAGE = selectedOption;
         });
     }
@@ -545,7 +546,7 @@ public class HelloController {
         choices.add(HelloController.RUN_MODEL_TEST);
         ChoiceDialog<String> dialog = new ChoiceDialog<>("测试模式", choices);
         dialog.setTitle("运行模式");
-        Stage stage = (Stage)pageBar.getScene().getWindow();
+        Stage stage = (Stage) pageBar.getScene().getWindow();
         dialog.initOwner(stage);
         dialog.setHeaderText("选择运行模式");
         dialog.setContentText("测试模式不会真正请求接口，识别数据为随机模拟，真实模式反之");
@@ -577,7 +578,7 @@ public class HelloController {
         dialog.setTitle("运行速度");
         dialog.setHeaderText("选择运行速度");
         dialog.setContentText("每秒钟识别的数量");
-        Stage stage = (Stage)pageBar.getScene().getWindow();
+        Stage stage = (Stage) pageBar.getScene().getWindow();
         dialog.initOwner(stage);
         Optional<Integer> result = dialog.showAndWait();
         result.ifPresent(selectedOption -> {
