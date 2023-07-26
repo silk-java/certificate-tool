@@ -27,4 +27,5 @@ module cn.juhe.zjsb {
     opens cn.juhe.zjsb.entity;
     opens cn.juhe.zjsb.event;
     opens cn.juhe.zjsb.task;
+    opens cn.juhe.zjsb.test;
 }
